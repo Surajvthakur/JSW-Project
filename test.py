@@ -117,7 +117,7 @@ st.plotly_chart(fig2, use_container_width=True)
 
 # Fourth, scatter plot between solar_energy_kWh and Energy Consumption with hue (Sunny or Not)
 st.write("### Scatter Plot: solar_energy_kWh vs wind_energy_kWh (Hue: Sunny or Not)")
-fig3 = px.scatter(filtered_df, x='solar_energy_kWh', y='wind_energy_kWh', color='is_sunny', title="Solar_energy_kWh vs Wind_energy_kWh",
+fig3 = px.scatter(filtered_df, x='solar_energy_kWh', y='wind_energy_kWh', color='is_sunny', title="Solar_energy_kWh vs wind_energy_kWh",
                   labels={"solar_energy_kWh": "solar_energy_kWh", "wind_energy_kWh": "wind_energy_kWh", "is_sunny": "Sunny (0 = No, 1 = Yes)"})
 st.plotly_chart(fig3, use_container_width=True)
 

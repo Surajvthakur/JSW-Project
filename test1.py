@@ -140,11 +140,27 @@ if run_button:
     normalized_df = pd.DataFrame(normalized_data, columns=['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh'])
 
     # Plot KDE Pairplot
-    st.write("### Pairplot: Solar Energy, Wind Energy, and Hydro Energy (Normalized with Shading)")
+    st.write("### Pairplot: Solar Energy, Wind Energy, and Hydro Energy (Normalized with Shading and Hue)")
 
+    # Add a hue column based on cloud_cover_% (e.g., categorize into "Low", "Medium", "High")
+    filtered_df['cloud_cover_category'] = pd.cut(
+        filtered_df['cloud_cover_%'], bins=[0, 33, 66, 100], labels=["Low", "Medium", "High"]
+    )
+
+    # Select relevant columns and normalize values
+    pairplot_data = filtered_df[['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh', 'cloud_cover_category']].dropna()
+    normalized_pairplot_data = pairplot_data.copy()
+    for col in ['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh']:
+        normalized_pairplot_data[col] = (pairplot_data[col] - pairplot_data[col].min()) / (pairplot_data[col].max() - pairplot_data[col].min())
+
+    # Create a pairplot with hue and shading
     sns.set(style="darkgrid")
-    pairplot_fig = sns.pairplot(normalized_df, palette='viridis')
-    pairplot_fig.map_lower(sns.kdeplot, levels=3, color=".2")
+    pairplot_fig = sns.pairplot(
+        normalized_pairplot_data,
+        hue='cloud_cover_category',
+        palette='viridis'
+    )
+    pairplot_fig.map_lower(sns.kdeplot, levels=3, shade=True)
 
     # Display the plot in Streamlit
     st.pyplot(pairplot_fig)
