@@ -143,7 +143,8 @@ if run_button:
     st.write("### Pairplot: Solar Energy, Wind Energy, and Hydro Energy (Normalized with Shading)")
 
     sns.set(style="darkgrid")
-    pairplot_fig = sns.pairplot(normalized_df, kind='kde', plot_kws={'shade': True})
+    pairplot_fig = sns.pairplot(normalized_df, palette='viridis')
+    pairplot_fig.map_lower(sns.kdeplot, levels=3, color=".2")
 
     # Display the plot in Streamlit
     st.pyplot(pairplot_fig)
