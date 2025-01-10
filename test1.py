@@ -118,16 +118,34 @@ if run_button:
                       labels={"temperature_C": "Temperature (°C)", "energy_consumed_kWh": "Energy Consumed (kWh)", "is_sunny": "Sunny (0 = No, 1 = Yes)"})
     st.plotly_chart(fig2, use_container_width=True)
 
-    # New: Scatter plot between Solar Energy and Energy Consumption
-    st.write("### Scatter Plot: Solar Energy vs Energy Consumption")
-    fig3 = px.scatter(filtered_df, x='solar_energy_kWh', y='energy_consumed_kWh', title="Solar Energy vs Energy Consumption",
-                      labels={"solar_energy_kWh": "Solar Energy (kWh)", "energy_consumed_kWh": "Energy Consumed (kWh)"})
+    # New: Scatter plot between Solar Energy and Energy Consumption with Hue based on Cloud Cover
+    st.write("### Scatter Plot: Solar Energy vs Energy Consumption (Hue: Cloud Cover Percentage)")
+    fig3 = px.scatter(
+        filtered_df, 
+        x='solar_energy_kWh', 
+        y='energy_consumed_kWh', 
+        title="Solar Energy vs Energy Consumption",
+        labels={"solar_energy_kWh": "Solar Energy (kWh)", "energy_consumed_kWh": "Energy Consumed (kWh)"},
+        color='cloud_cover_%',  # Set the hue to 'cloud_cover_%'
+        color_continuous_scale='Viridis'  # Optional: Adds a color scale
+    )
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.write("### Pairplot: Solar Energy, Wind Energy, and Hydro Energy")
-    pairplot_data = filtered_df[['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh']]
+
+    # Normalize the values in the selected columns
+    scaler = StandardScaler()
+    normalized_data = scaler.fit_transform(filtered_df[['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh']])
+
+    # Create a new DataFrame with normalized values
+    normalized_df = pd.DataFrame(normalized_data, columns=['solar_energy_kWh', 'wind_energy_kWh', 'hydro_energy_kWh'])
+
+    # Plot KDE Pairplot
+    st.write("### Pairplot: Solar Energy, Wind Energy, and Hydro Energy (Normalized with Shading)")
+
     sns.set(style="darkgrid")
-    pairplot_fig = sns.pairplot(pairplot_data)
+    pairplot_fig = sns.pairplot(normalized_df, kind='kde', plot_kws={'shade': True})
+
+    # Display the plot in Streamlit
     st.pyplot(pairplot_fig)
 
     # Sixth, box plot to show the spread of Energy Consumption based on the 'is_sunny' feature
