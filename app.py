@@ -32,10 +32,11 @@ def estimate_hydropower(flow_rate, head_height, efficiency=0.85):
     return power / 1000  # Convert to kW
 
 # Streamlit App
-st.title("Energy Generation and Demand Calculator")
+st.sidebar.image(r"C:\Users\suraj\OneDrive\Desktop\Python Virtual Enviornment\jsw energy logo.png", use_container_width=True)
+st.title("⚡ Energy Generation and Demand Calculator")
 
-# User inputs
-st.sidebar.header("Input Parameters")
+# Sidebar inputs
+st.sidebar.header("⚙️ Input Parameters")
 solar_area = st.sidebar.number_input("Solar Panel Area (m²)", value=50)
 solar_efficiency = st.sidebar.slider("Solar Panel Efficiency (%)", 10, 25, 18) / 100
 performance_ratio = st.sidebar.slider("Performance Ratio", 0.5, 1.0, 0.85)
@@ -61,22 +62,50 @@ hydropower = estimate_hydropower(flow_rate, head_height)
 total_energy_generated = solar_energy + wind_energy + hydropower
 need_to_generate = max(0, energy_demand - total_energy_generated)
 
-# Results
-st.subheader("Energy Generation Results")
-st.write(f"Solar Energy: {solar_energy:.2f} kWh/day")
-st.write(f"Wind Energy: {wind_energy:.2f} kWh/day")
-st.write(f"Hydropower: {hydropower:.2f} kWh/day")
-st.write(f"Total Energy Generated: {total_energy_generated:.2f} kWh/day")
-st.write(f"Energy Demand: {energy_demand:.2f} kWh")
-st.write(f"Need to Generate: {need_to_generate:.2f} kWh")
+# Results Display
+st.subheader("🌞 Energy Generation Results")
+st.markdown(f"""
+- **Solar Energy:** `{solar_energy:.2f} kWh/day`
+- **Wind Energy:** `{wind_energy:.2f} kWh/day`
+- **Hydropower:** `{hydropower:.2f} kWh/day`
+- **Total Energy Generated:** `{total_energy_generated:.2f} kWh/day`
+- **Energy Demand:** `{energy_demand:.2f} kWh`
+- **Need to Generate:** `{need_to_generate:.2f} kWh`
+""")
 
-# Pie chart
-st.subheader("Energy Generation Distribution")
+# Pie Chart
+st.subheader("🔋 Energy Generation Distribution")
 labels = ["Solar Energy", "Wind Energy", "Hydropower", "Need to Generate"]
 values = [solar_energy, wind_energy, hydropower, need_to_generate]
 colors = ["gold", "skyblue", "lightgreen", "red"]
 
-fig, ax = plt.subplots()
-ax.pie(values, labels=labels, autopct='%1.1f%%', startangle=140, colors=colors, explode=[0.1, 0.1, 0.1, 0.1])
-ax.set_title("Energy Generation and Demand")
+# Enhanced pie chart with dark background
+fig, ax = plt.subplots(figsize=(8, 8))
+fig.patch.set_facecolor('#000000')  # Dark background for the figure
+ax.set_facecolor('#1e1e2f')  # Dark background for the plot area
+
+wedges, texts, autotexts = ax.pie(
+    values, 
+    labels=labels, 
+    autopct='%1.1f%%', 
+    startangle=140, 
+    colors=colors, 
+    explode=[0.1, 0.1, 0.1, 0.1],
+    textprops={'color': 'white', 'fontsize': 12}
+)
+
+# Customize text appearance
+for text in texts:
+    text.set_color('white')  # Labels in white
+for autotext in autotexts:
+    autotext.set_color('#ffffff')  # Percentages in light blue
+
+ax.set_title(
+    "Energy Generation vs. Demand", 
+    fontsize=16, 
+    fontweight='bold', 
+    color='white'
+)
+
+# Display the chart in Streamlit
 st.pyplot(fig)
